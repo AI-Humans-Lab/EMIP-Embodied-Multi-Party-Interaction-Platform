@@ -1,0 +1,96 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    container_name: mc_server_flat_25565
+    tty: true
+    stdin_open: true
+    ports:
+      - "25565:25565"
+      - "24454:24454/udp"
+      - "127.0.0.1:7891:7891"
+    environment:
+      EULA: "TRUE"
+      TYPE: "FABRIC"
+      VERSION: "1.21"
+      CREATE_CONSOLE_IN_PIPE: "true"
+      EASYLLM_OBSERVATION_BIND_HOST: "0.0.0.0"
+      EASYLLM_OBSERVATION_PORT: "7891"
+      # Emotecraft is pinned to 2.4.12+1.21.1-fabric (daqt5qcK)
+      MODRINTH_PROJECTS: |
+        fabric-api
+        simple-voice-chat:fabric-1.21.1-2.6.17
+        easy-llm:1.1.0+mc1.21
+        easy-llm-voice
+        emotecraft:daqt5qcK
+      OPS: "36881d51-7477-3eb6-91a1-dfc11065590d"
+      ONLINE_MODE: "FALSE"
+      DIFFICULTY: "peaceful"
+      MAX_PLAYERS: "100"
+      LEVEL: "map1_草原"
+      LEVEL_TYPE: "flat"
+      GENERATOR_SETTINGS: '{"layers":[{"block":"minecraft:bedrock","height":1},{"block":"minecraft:dirt","height":2},{"block":"minecraft:grass_block","height":1}],"biome":"minecraft:plains"}'
+      GENERATE_STRUCTURES: "false"
+    volumes:
+      - "./minecraft_server_on_docker/flat/25565/data:/data"
+    healthcheck:
+      test: ["CMD", "mc-health"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 120s
+    networks:
+      - bnnet
+
+  mineflayer:
+    build:
+      context: ./mineflayer_server_on_docker/mineflayer
+    container_name: beliefnestjs
+    environment:
+      MINECRAFT_HOST: "minecraft"
+      MINECRAFT_PORT: "25565"
+      NODE_PATH: "/app/node_modules"
+      MINEFLAYER_CAN_DIG_WHEN_MOVE: "false"
+      MINEFLAYER_MOVE_TIMEOUT_SEC: "120"
+      MINEFLAYER_STUCK_CHECK_INTERVAL_SEC: "0.1"
+      MINEFLAYER_STUCK_OFFSET_RANGE: "1"
+    ports:
+      - "3000:3000"
+    command: ["node", "server.js", "3000"]
+    volumes:
+      - "./mineflayer_server_on_docker/mineflayer_logs:/mf_logs"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          const net=require('net');const s=net.connect(3000,'127.0.0.1',()=>{s.end();process.exit(0)});s.setTimeout(1000,()=>{s.destroy();process.exit(1)});s.on('error',()=>process.exit(1));
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 5s
+    networks:
+      - bnnet
+
+  python_runtime:
+    profiles: ["manual"]
+    build:
+      context: .
+      dockerfile: ./src/Dockerfile
+    gpus: all
+    stdin_open: true
+    tty: true
+    stop_signal: SIGINT
+    stop_grace_period: 30s
+    working_dir: /app/src
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - "./src:/app/src"
+      - "./minecraft_server_on_docker:/app/minecraft_server_on_docker:ro"
+    networks:
+      - bnnet
+
+networks:
+  bnnet:
+    external: true

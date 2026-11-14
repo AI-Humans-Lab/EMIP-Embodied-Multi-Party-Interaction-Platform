@@ -1,0 +1,24 @@
+.gradle/
+build/
+run/
+__pycache__/
+*.log
+*.tmp
+*.bak
+
+minecraft_server_on_docker/flat/*/
+minecraft_server_on_docker/normal/*/
+mineflayer_server_on_docker/mineflayer_logs/
+
+src/logs/
+src/world_states/
+src/.vscode/
+src/realtimesst.log
+
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# docker-compose.override.yml
+# minecraft_server_on_docker/DEVELOP/

@@ -1,0 +1,28 @@
+# mod connection
+websocket-client
+websockets>=12.0
+requests>=2.32.0
+numpy>=1.26.0
+numba
+pyogg
+pyyaml
+av
+
+# Minecraft world import
+NBT>=1.5.1
+mcapy>=0.9.1
+
+# llm
+Jinja2
+openai
+requests
+mcp>=2.0,<3
+
+# Speech To Text use google speech
+librosa>=0.10.2
+soundfile>=0.12.1
+unidic-lite>=1.0.8
+
+# Speech To Text use realtimeSTT
+RealtimeSTT[faster-whisper]
+ctranslate2
