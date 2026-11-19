@@ -28,7 +28,7 @@ from modules.belief_inference import BeliefInference
 from modules.belief_mcp import build_belief_mcp_server
 from modules.world_state_file import build_initial_belief_state
 from modules.llm import DECISION_MODEL, OpenAILLM
-from modules.audio_mcp_bridge import AudioMCPProxy, serve_audio_mcp
+from modules.voice_mcp_bridge import AudioMCPProxy, serve_audio_mcp
 from modules.voice_mcp_process import decode_base64
 import modules.llm as llm
 from modules.mcp_client_request import (

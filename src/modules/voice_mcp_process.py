@@ -452,6 +452,8 @@ class MinecraftAudioProcessor:
         )
         return pcm_bytes, last_speaker_name, resample_state
 
+
+
     def put_pcm_bytes_to_asr_queue_in_chunks(self, pcm_bytes: bytes):
         """PCMを音声認識用の一定長に分割し、最後の不足分を無音で埋めて、順番に音声認識の入力処理へ渡す。"""
         asr_chunk_bytes = self.config.opus.asr_chunk_bytes
@@ -491,11 +493,7 @@ class MinecraftAudioProcessor:
                         logger.info("audio_packet:%s", audio_packet)
                     self.save_audio_data(audio_packet)
 
-                    pcm_bytes, last_speaker_name, resample_state = (
-                        self.build_pcm_bytes_data_from_audio_obs(
-                            audio_packet, last_speaker_name, resample_state
-                        )
-                    )
+                    pcm_bytes, last_speaker_name, resample_state = (self.build_pcm_bytes_data_from_audio_obs(audio_packet, last_speaker_name, resample_state))
                     if pcm_bytes is not None:
                         self.put_pcm_bytes_to_asr_queue_in_chunks(pcm_bytes)
                 except queue.Empty:
